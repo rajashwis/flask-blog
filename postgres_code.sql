@@ -2,6 +2,16 @@
 DROP TABLE IF EXISTS post_tags CASCADE;
 DROP TABLE IF EXISTS tags CASCADE;
 DROP TABLE IF EXISTS article CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+--creating users table
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(128) NOT NULL,
+    username VARCHAR(20) NOT NULL UNIQUE,
+    password VARCHAR(128) NOT NULL,
+    email VARCHAR(120) NOT NULL UNIQUE
+);
 
 --creating an ARTICLE table
 CREATE TABLE article (
