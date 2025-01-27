@@ -1,10 +1,10 @@
 import os
 
 import psycopg2
-blog_data = psycopg2.connect(database="blog", user="postgres", 
+blog_data = psycopg2.connect(database="blog", user="ubuntu", 
                             password="Blues22#", host="localhost", port="5432")
 
-from flask import Flask, render_template, url_for, request, redirect, flash
+from flask import Flask, render_template, url_for, request, redirect, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, \
     logout_user, current_user
@@ -17,7 +17,7 @@ app.jinja_env.filters["zip"] = zip
 mycursor = blog_data.cursor()
 
 app.config["SQLALCHEMY_DATABASE_URI"] = \
-    "postgresql://postgres:Blues22#@localhost/blog"
+    "postgresql://ubuntu:Blues22#@localhost/blog"
 app.config["SECRET_KEY"] = "this is whatever"
 
 db = SQLAlchemy(app)
@@ -515,6 +515,34 @@ def delete_article(post_id):
     else:
         flash("You aren't authorised!", "warning")
         return redirect(url_for("index"))
+    
+#SERVICE SIDE
+  
+@app.route("/get-articles")
+def get_articles():
+    mycursor = blog_data.cursor()
+    mycursor.close()
+    mycursor = blog_data.cursor()
+    
+    mycursor.execute("SELECT * FROM article")
+    article_details = mycursor.fetchall()
+    
+    author_names = []
+    author_ids = []
+
+    for article in article_details:
+        mycursor.execute(f"SELECT name, id FROM users WHERE id = {article[-1]}")
+        author_details = mycursor.fetchall()
+        author_names.append(author_details[0][0])
+        author_ids.append(author_details[0][1])
+
+    response_data = {
+            "article_details": article_details,
+            "author_names": author_names,
+            "author_ids": author_ids
+        }
+    return jsonify(response_data)
+
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False, host="0.0.0.0", port=5000)
