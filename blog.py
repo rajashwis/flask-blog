@@ -1,7 +1,7 @@
 import os
 
 import psycopg2
-blog_data = psycopg2.connect(database="blog", user="ubuntu", 
+blog_data = psycopg2.connect(database="blog", user="postgres", 
                             password="Blues22#", host="localhost", port="5432")
 
 from flask import Flask, render_template, url_for, request, redirect, flash, jsonify
@@ -17,7 +17,7 @@ app.jinja_env.filters["zip"] = zip
 mycursor = blog_data.cursor()
 
 app.config["SQLALCHEMY_DATABASE_URI"] = \
-    "postgresql://ubuntu:Blues22#@localhost/blog"
+    "postgresql://postgres:Blues22#@localhost/blog"
 app.config["SECRET_KEY"] = "this is whatever"
 
 db = SQLAlchemy(app)
